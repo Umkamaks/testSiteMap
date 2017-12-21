@@ -1,0 +1,32 @@
+﻿@model IEnumerable<SiteMapProg.Models.MapSite>
+@{
+    ViewBag.Title = "History";
+}
+
+@{ 
+    foreach (var item in Model)
+    {
+        <p>@item.NameSite</p>
+        <table id="tableID" class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Ссылка</th>
+                    <th scope="col">Время отклика, мс</th>
+                </tr>
+                
+                    @foreach (var item2 in item.SiteMapUrls.OrderBy(m=>m.TimeOut))
+                    {
+                        <tr>
+                            <th>@item2.Id</th>
+                            <th>@item2.UrlSite</th>
+                            <th>@item2.TimeOut</th>
+                        </tr>
+                    }
+                
+            </thead>
+            <tbody></tbody>
+        </table>    
+    }
+}
+

@@ -1,0 +1,172 @@
+﻿
+@{
+    ViewBag.Title = "Домашняя страница";
+}
+
+
+<br /><br />
+@section scripts{
+
+    <script type="text/javascript">
+
+        google.charts.load('current', { packages: ['corechart', 'line'] });
+        var dataOb;
+        $('#ajaxTestButton2').click(function () {
+
+            $("#tableID").find('tbody').empty();
+            var testData = { 'urladdress': $("#ajaxTesStr1").val() };
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/SiteJson",
+                data: JSON.stringify(testData),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: successFunc,
+                error: errorFunc,
+                beforeSend: weating,
+                complete: comp
+            });
+        });
+        function comp() {
+
+            $("#wating").hide();
+        }
+        function weating() {
+            document.getElementById("wating").innerHTML = "Ожидание: время зависит от колличества ссылок";
+            $("#wating").show();
+            $("#warning").hide();
+        }
+        function successFunc(data, status) {
+            if (typeof data == 'string') {
+                document.getElementById("warning").innerHTML = data;
+
+            }
+            else {
+                $("#warning").hide();
+
+                google.charts.setOnLoadCallback(drawChart);
+                dataOb = data;
+                for (var i = 0; i < data.length; i++) {
+
+                    var body = $("#tableID").find('tbody');
+
+                    var row = $('<tr>');
+       
+                    var column1 = $('<td>');
+                    var column = $('<td>');
+                    var column2 = $('<td>');
+        
+                    var span1 = $('<span>');
+                    var span = $('<span>');
+                    var span2 = $('<span>');
+            
+                    span1.text(i);
+                    span.text(data[i].UrlSite);
+                    span2.text(data[i].TimeOut);
+
+                    column1.append(span1);
+                    column.append(span);
+                    column2.append(span2);
+     
+                    row.append(column1);
+                    row.append(column);
+                    row.append(column2)
+    
+                    body.append(row);
+
+                }
+            }
+        }
+
+        function errorFunc(errorData) {
+            alert('Ошибка' + errorData.responseText);
+        }
+
+        function drawBackgroundColor() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('number', 'X');
+            data.addColumn('number', 'TimeOut');
+            var set;
+            var arr = new Array();
+            for (var i = 0; i < dataOb.length; i++) {
+                if (i == 0) {
+                    arr[i] = [dataOb[i].TimeOut, i];
+                } else {
+                    arr[i] = [dataOb[i].TimeOut + dataOb[i - 1].TimeOut, i];                
+                }
+            }
+            data.addRows(arr);
+            var options = {
+                hAxis: {
+                    title: 'Time'
+                },
+                vAxis: {
+                    title: 'Site'
+                },
+                backgroundColor: '#f1f8e9'
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+
+        //---------------------------------------------------------------
+        google.charts.load("current", { packages: ["timeline"] });
+
+
+        function drawChart() {
+            var container = document.getElementById('example2.2');
+            var chart = new google.visualization.Timeline(container);
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'string', id: 'Term' });
+            dataTable.addColumn({ type: 'string', id: 'Name' });
+            dataTable.addColumn({ type: 'number', id: 'Start' });
+            dataTable.addColumn({ type: 'number', id: 'End' });
+            var arr = new Array();
+            var sum = 0;
+         
+            for (var i = 0; i < dataOb.length; i++) {
+        
+                        arr[i] = [dataOb[i].UrlSite, String(i), sum, dataOb[i].TimeOut + sum];
+                        sum += dataOb[i].TimeOut;
+            }
+            dataTable.addRows(arr);
+
+            var options = {
+                timeline: { showRowLabels: false }
+            };
+
+            chart.draw(dataTable, options);
+        }
+    </script>
+}
+
+<input type="text" id="ajaxTesStr1" />
+<button id="ajaxTestButton2" type="button">URL</button>
+<br><br>
+
+<div id="example2.2" style="height: 280px;"></div>
+<div id="chart_div"></div>
+<div id="wating"></div>
+<div id="warning"></div>
+<div id="nameSite"></div>
+<br />
+<div id="results"></div>
+<table id="tableID" class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Ссылка</th>
+            <th scope="col">Время отклика, мс</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+
+<br />
+
+
+
+
