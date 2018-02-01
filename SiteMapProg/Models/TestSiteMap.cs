@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web;
 
 namespace SiteMapProg.Models
@@ -17,7 +18,7 @@ namespace SiteMapProg.Models
 
             foreach (var item in siteUrl)
             {
-                if (i < 15)
+                if (i < 20) //количество ссылок = 20
                 {
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();

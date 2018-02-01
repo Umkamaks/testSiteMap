@@ -33,14 +33,15 @@
             $("#wating").hide();
         }
         function weating() {
-            document.getElementById("wating").innerHTML = "Ожидание: время зависит от колличества ссылок";
+            document.getElementById("wating").innerHTML = "Ожидание: время зависит от количества ссылок";
             $("#wating").show();
             $("#warning").hide();
         }
         function successFunc(data, status) {
             if (typeof data == 'string') {
+               
                 document.getElementById("warning").innerHTML = data;
-
+                $("#warning").show();
             }
             else {
                 $("#warning").hide();

@@ -18,7 +18,7 @@ namespace SiteMapProg.Models
                 rssXmlDoc.Load(fullUrl);
                 if (rssXmlDoc == null)
                 {
-                    throw new Exception("Не правильный адресс сайта или отсутсвует карта сайта");
+                    throw new Exception("Не правильный адресс сайта");
                 }
 
                 foreach (XmlNode topNode in rssXmlDoc.ChildNodes)
@@ -55,16 +55,21 @@ namespace SiteMapProg.Models
             }
             catch (Exception)
             {
-                throw new Exception("Файл не найден");
+                throw new Exception("Отсутсвует карта сайта");
             }
-           
+
         }
         private IList<string> ParseSitemapIndex(IList<string> sitemapIndex)
         {
             IList<string> listSite = new List<string>();
             XmlDocument rssXmlDoc = new XmlDocument();
+            int j = 0;
             foreach (var url in sitemapIndex)
-            {               
+            {
+                if (j==1)
+                {
+                    break;
+                }
                 rssXmlDoc.Load(url);
                 foreach (XmlNode topNode in rssXmlDoc.ChildNodes)
                 {
@@ -74,16 +79,18 @@ namespace SiteMapProg.Models
                         nsmgr.AddNamespace("ns", topNode.NamespaceURI);
 
                         XmlNodeList urlNodes = topNode.ChildNodes;
+
                         foreach (XmlNode urlNode in urlNodes)
                         {
-                            XmlNode locNode = urlNode.SelectSingleNode("ns:loc", nsmgr);
-                            string link = locNode != null ? locNode.InnerText : "";
-                            listSite.Add(link);
+                                XmlNode locNode = urlNode.SelectSingleNode("ns:loc", nsmgr);
+                                string link = locNode != null ? locNode.InnerText : "";
+                                listSite.Add(link);
                         }
-
-                    }     
+                    }
                 }
+                j++;
             }
+
             return listSite;
         }
     }
